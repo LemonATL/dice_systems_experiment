@@ -1,4 +1,6 @@
 require './array'
+require './die'
+require './roll'
 
 # The MasterSystem rules are similar to the SquareSystem rules, in that die 
 # rolls are summed, there are explosions, and a table is used to determine the 
@@ -19,7 +21,7 @@ require './array'
 # |  144 - 232 |   11 | 
 # ...etc.
 
-module MasterSystem
+module Master
   class Table
     def self.[](s)
       @table ||= {1 => 1, 2 => 2}
@@ -39,21 +41,14 @@ module MasterSystem
     end
   end
 
-  class Die
-    DEFAULT_SIDES               = 6
+  class Die < ::Die
     DEFAULT_EXPLOSION_VALUE     = 5
     DEFAULT_EXPLOSION_THRESHOLD = 5
 
     def initialize(opts={})
-      @opts = opts.frozen? ? opts : opts.dup.freeze
-
-      @sides                = opts[:sides]                || DEFAULT_SIDES
-      @explosion_value      = opts[:success_threshold]    || DEFAULT_EXPLOSION_VALUE
+      super(opts)
+      @explosion_value      = opts[:explosion_value]      || DEFAULT_EXPLOSION_VALUE
       @explosion_threshold  = opts[:explosion_threshold]  || DEFAULT_EXPLOSION_THRESHOLD
-    end
-
-    def face
-      @face ||= rand(@sides) + 1
     end
 
     def value
@@ -61,16 +56,7 @@ module MasterSystem
     end
   end
 
-  class Roll
-    DEFAULT_DICE = 5
-
-    def initialize(opts={})
-      @opts  = @opts.frozen? ? opts : opts.dup.freeze
-
-      @dice     = opts[:dice] || DEFAULT_DICE
-      @die_opts = opts[:die]  || {}
-    end
-
+  class Roll < ::Roll
     def total
       @total ||= @dice.times.map { Die.new(@die_opts).value }.sum
     end
@@ -80,4 +66,3 @@ module MasterSystem
     end
   end
 end
-

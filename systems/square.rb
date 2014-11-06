@@ -1,4 +1,6 @@
 require './array'
+require './die'
+require './roll'
 
 # The SquareSystem rules allow for an arbitrary number of six-sided dice to be 
 # rolled. For each die showing a 1, 2, 3 or 4, the values are simply summed. For
@@ -23,7 +25,7 @@ require './array'
 # |    66 - 78 |   11 | 
 # ...etc
 
-module SquareSystem
+module Square
   class Table
     def self.[](i)
       @table ||= {1 => 1}
@@ -44,21 +46,14 @@ module SquareSystem
     end
   end
 
-  class Die
-    DEFAULT_SIDES               = 6
+  class Die < ::Die
     DEFAULT_EXPLOSION_VALUE     = 5
     DEFAULT_EXPLOSION_THRESHOLD = 5
 
     def initialize(opts={})
-      @opts = opts.frozen? ? opts : opts.dup.freeze
-
-      @sides                = opts[:sides]                || DEFAULT_SIDES
+      super(opts)
       @explosion_value      = opts[:success_threshold]    || DEFAULT_EXPLOSION_VALUE
       @explosion_threshold  = opts[:explosion_threshold]  || DEFAULT_EXPLOSION_THRESHOLD
-    end
-
-    def face
-      @face ||= rand(@sides) + 1
     end
 
     def value
@@ -66,18 +61,7 @@ module SquareSystem
     end
   end
 
-  class Roll
-    DEFAULT_DICE = 5
-
-    attr_reader :total 
-
-    def initialize(opts={})
-      @opts     = opts.frozen? ? opts : opts.dup.freeze
-
-      @dice     = @opts[:dice] || DEFAULT_DICE
-      @die_opts = @opts[:die]  || {}
-    end
-
+  class Roll < ::Roll
     def total
       @total ||= @dice.times.map { Die.new(@die_opts).value }.sum
     end

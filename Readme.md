@@ -1,3 +1,5 @@
+Read the comments in each file -- fatelike, master_system, shadowrunlike and 
+square_system -- for details about what each die rolling system looks like. 
 
     require './experiment'
     require './shadowrunlike'
